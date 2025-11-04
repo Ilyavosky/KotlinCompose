@@ -1,0 +1,56 @@
+package com.ilya.examen.views
+
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.ilya.examen.viewmodels.ThemeViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ThemeView(navController: NavController) {
+    // Obtenemos el ViewModel gracias a Hilt
+    val viewModel: ThemeViewModel = hiltViewModel()
+
+    // Observamos el estado (Flow) del ViewModel
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Vista 2: Tema (DataStore)") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(if (isDarkMode) "Modo Oscuro" else "Modo Claro")
+                Spacer(modifier = Modifier.width(16.dp))
+                Switch(
+                    checked = isDarkMode,
+                    onCheckedChange = { viewModel.saveDarkMode(it) } // Llama al ViewModel
+                )
+            }
+        }
+    }
+}
